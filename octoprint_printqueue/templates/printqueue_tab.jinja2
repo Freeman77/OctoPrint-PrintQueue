@@ -1,0 +1,242 @@
+<div class="queue-main-buttons text-left">
+    <div class="btn-toolbar">
+        <div class="btn-group ">
+            <button class="btn btn-info" type="button" href="#" data-bind="value: 'start', disable: queueStatus() === 'running', click: sendQueueCommand">Start</button>
+            <button class="btn" type="button" href="#" data-bind="value: 'stop', disable: queueStatus() != 'running', click: sendQueueCommand">Stop</button>
+        </div>
+    </div>
+</div>
+
+<button class="btn" data-bind="click: sendQueueCommand">[TEST]Print file</button>
+<button class="btn" data-bind="click: getQueueItems">[TEST]Update queue</button>
+
+<div class="clearfix"></div>
+<div>
+    <h4 class="text-left">Queue Status: <span data-bind="text: queueStatus"></span></h4>
+    <table id="queue-table-printing" class="table table-condensed table-queue" style="clear: both;">
+        <tr>
+            <td class="queue-item-priority">
+            </td>
+            <td class="queue-item-description">
+                <div class="text-left">
+                    <ul class="inline">
+                        <li><strong>groot_calibratieAURORA6-2.gcode</strong></li>
+                    </ul>
+                </div>
+                <div class="text-left">
+                    <ul class="inline">
+                        <li><span class="label label-success">Printing</span></li>
+                        <li><small>Order #15689</small></li>
+                    </ul>
+                </div>
+            </td>
+            <td class="queue-item-copies">
+                <div class="text-center">
+                    <span class="badge badge"><i class="icon-copy"></i> 2 of 3</span>
+                </div>
+            </td>
+            <td class="queue-item-controls">
+                <div class="text-center" >
+                    <div class="btn-group">
+                        <button type="button" class="btn" href="#"><i class="icon-pencil"></i></button>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="clearfix">
+    <button class="btn pull-right" data-bind="click: clearAllQItems">Clear all</button>
+</div>
+<div class="tabbable-panel">
+    <div class="tabbable-line">
+        <ul class="nav nav-tabs">
+            <li class="active">
+                <a href="#tab_queue_queued" data-toggle="tab">
+                    <span>
+                        <span>Queued (</span>
+                        <span data-bind="text: queueItems().length"></span>
+                        <span>)</span>
+                    </span>
+                </a>
+            </li>
+            <li>
+                <a href="#tab_queue_history" data-toggle="tab">Queue History</a>
+            </li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane active" id="tab_queue_queued">
+                <div>
+                    <strong data-bind="fadeVisible: queueItems().length == 0">There are no items in the queue.</strong>
+                    <table id="queue-table-queued" class="table table-condensed table-queue" style="clear: both;">
+                        <tbody data-bind='template: { foreach: queueItems, afterAdd: showQueueElement, afterMove: showQueueElement}'> <!-- , beforeRemove: hideQueueElement,  !-->
+                            <tr>
+                                <td class="queue-item-priority">
+                                    <div class="btn-group btn-group-vertical">
+                                        <button data-bind="disable: $index() === 0, click: $root.changePriority.bind($data, 'up')" type="button" class="btn" href="#">
+                                            <i class="icon-chevron-up"></i>
+                                        </button>
+                                        <button data-bind="disable: $index() === $parent.queueItems().length - 1, click:  $root.changePriority.bind($data, 'down')" type="button" class="btn" href="#">
+                                            <i class="icon-chevron-down"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                                <td class="queue-item-description">
+                                    <div class="text-left">
+                                        <ul class="inline">
+                                            <li><strong data-bind="text: filename"></strong></li>
+                                        </ul>
+                                    </div>
+                                    <div class="text-left">
+                                        <ul class="inline">
+                                            <li><span data-bind="text: status" class="label label-info"></span></li>
+                                            <li><small data-bind="text: notes"></small></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                                <td class="queue-item-copies">
+                                    <div class="text-center">
+                                        <span class="badge queue-item-copies-badge"><i class="icon-copy"></i>
+                                            <span data-bind="text: printed_copies"></span> of <span data-bind="text: total_copies"></span>
+                                        </span>
+                                    </div>
+                                </td>
+                                <td class="queue-item-controls">
+                                    <div class="text-center" >
+                                        <div class="btn-group">
+                                            <button type="button" data-bind="click: $parent.showEditQueueItem" class="btn" href="#"><i class="icon-pencil"></i></button>
+                                            <button type="button" data-bind="click: $parent.removeQueueItem" class="btn" href="#"><i class="icon-remove"></i></button>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="tab-pane" id="tab_queue_history">
+                <p>
+                    Howdy, this is the history tab placeholder.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<table class="table table-bordered">
+    <thead><tr>
+        <th>Priority</th>
+        <th>ID</th>
+        <th>Filename</th>
+        <th>TotalCopies</th>
+        <th>PrintedCopies</th>
+        <th>Status</th>
+        <th>Notes</th>
+    </tr></thead>
+    <tbody data-bind="foreach: queueItems">
+        <tr>
+            <td data-bind="text: priority"></td>
+            <td data-bind="text: q_id"></td>
+            <td data-bind="text: filename"></td>
+            <td data-bind="text: total_copies"></td>
+            <td data-bind="text: printed_copies"></td>
+            <td data-bind="text: status"></td>
+            <td data-bind="text: notes"></td>
+        </tr>
+    </tbody>
+</table>
+
+<div id="queue-item-modal-new" class="modal hide fade">
+    <div class="modal-header">
+        <a href="#" class="close" data-dismiss="modal" aria-hidden="true">&times;</a>
+        <h3>Adding New Queue Item</h3>
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal">
+            <div class="queue-item-modal">
+                <table class="table table-condensed" style="clear: both;">
+                    <tbody>
+                        <tr>
+                            <td class="queue-item-modal-icon-cube" height="70">
+                                <i class="fa fa-cube fa-3x"></i>
+                            </td>
+                            <td class="queue-item-modal-filename">
+                                <div class="text-left">
+                                    <strong data-bind="text: newQItemFilename" ></strong>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="control-group">
+              <label class="control-label"><strong>{{ _('Copies') }}</strong></label>
+                <div class="controls">
+                    <div class="input-prepend input-append">
+                      <button type="button" class="btn" data-bind="disable: newQItemCopies() <= 1, click: function(){ $root.changeNewQItem_Copies('minus')}"><i class="icon-minus"></i></button>
+                      <input type="number" class="span1 input-nospin" style="text-align: center" data-bind="value: newQItemCopies, attr: {max: 99, min: 1}"/>
+                      <button type="button" class="btn" data-bind="disable: newQItemCopies() >= 99, click: function(){ $root.changeNewQItem_Copies('plus')}"><i class="icon-plus"></i></button>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label"><strong>{{ _('Notes') }}</strong></label>
+                <div class="controls">
+                    <input type="text" class="span3" data-bind="value: newQItemNotes">
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <a href="#" class="btn" data-dismiss="modal" aria-hidden="true">{{ _('Cancel') }}</a>
+        <a href="#" class="btn btn-primary" data-bind="click: $root.addQueueItem">{{ _('Add to queue') }}</a>
+    </div>
+</div>
+
+<div id="queue-item-modal-edit" class="modal fade" data-bind="with: queueItemForEdit">
+    <div class="modal-header">
+        <a href="#" class="close" data-dismiss="modal" aria-hidden="true">&times;</a>
+        <h3>Editing Queue Item</h3>
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal">
+            <div class="queue-item-modal">
+                <table class="table table-condensed" style="clear: both;">
+                    <tbody>
+                        <tr>
+                            <td class="queue-item-modal-icon-cube" height="70">
+                                <i class="fa fa-cube fa-3x"></i>
+                            </td>
+                            <td class="queue-item-modal-filename">
+                                <div class="text-left">
+                                    <strong data-bind="text: filename" ></strong>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="control-group">
+              <label class="control-label"><strong>{{ _('Copies') }}</strong></label>
+                <div class="controls">
+                    <div class="input-prepend input-append">
+                      <button type="button" class="btn" data-bind="disable: $root.editQItemCopies() <= 1, click: function(){ $root.changeEditQItem_Copies('minus')}"><i class="icon-minus"></i></button>
+                      <input type="number" class="span1 input-nospin" style="text-align: center" data-bind="value: $root.editQItemCopies, attr: {max: 99, min: 1}"/>
+                      <button type="button" class="btn" data-bind="disable: $root.editQItemCopies() >= 99, click: function(){ $root.changeEditQItem_Copies('plus')}"><i class="icon-plus"></i></button>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label"><strong>{{ _('Notes') }}</strong></label>
+                <div class="controls">
+                    <input type="text" class="span3" data-bind="value: $root.editQItemNotes">
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <a href="#" class="btn" data-dismiss="modal" aria-hidden="true">{{ _('Cancel') }}</a>
+        <a href="#" class="btn btn-primary" data-bind="click: $root.updateQueueItemDetails">{{ _('Save') }}</a>
+    </div>
+</div>
