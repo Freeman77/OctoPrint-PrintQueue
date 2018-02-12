@@ -1,6 +1,9 @@
 # Octoprint-PrintQueue
 
-**TODO:** Describe what your plugin does.
+---Work in progress---
+
+Extends Octoprint functionality by providing a Print Queue. Streamlining the process for 3D printing farms.
+Waits for user input and can execute GCODE commands after finalizing a print.
 
 ## Setup
 
